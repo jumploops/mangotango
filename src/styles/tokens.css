@@ -1,0 +1,102 @@
+/* Mango Tango design tokens — oklch palette, spring easings, registered
+   custom properties. Shared by the guest and admin apps. */
+
+@property --pct {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --glow {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+@property --grad-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Palette — jungle night + mango flesh */
+  --ink: oklch(0.96 0.02 95);
+  --ink-dim: oklch(0.78 0.03 95);
+  --ink-faint: oklch(0.62 0.03 95);
+  --night: oklch(0.16 0.02 80);
+  --card: oklch(0.24 0.03 85 / 0.62);
+  --card-line: oklch(0.6 0.08 85 / 0.35);
+  --mango: oklch(0.8 0.16 75);
+  --mango-deep: oklch(0.72 0.18 55);
+  --blush: oklch(0.62 0.21 30);
+  --lime: oklch(0.82 0.19 125);
+  --leaf: oklch(0.62 0.14 145);
+  --danger: oklch(0.62 0.19 25);
+
+  --grad-hot: linear-gradient(100deg, var(--blush), var(--mango-deep) 30%, var(--mango) 55%, var(--lime) 100%);
+
+  /* Springy easings via linear() */
+  --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%,
+      0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 100%);
+  --spring-big: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077,
+      1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%,
+      0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1 100%);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --r-lg: 26px;
+  --r-md: 18px;
+  --r-sm: 12px;
+
+  --shadow-card: 0 8px 30px oklch(0 0 0 / 0.35);
+  --shadow-pop: 0 16px 50px oklch(0 0 0 / 0.5);
+
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+/* Reset-ish */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--ink);
+  /* Fallback nectar if WebGL is unavailable — the canvas paints over this. */
+  background:
+    radial-gradient(120% 90% at 50% -10%, oklch(0.35 0.09 70 / 0.55), transparent 60%),
+    radial-gradient(100% 70% at 85% 100%, oklch(0.3 0.1 140 / 0.4), transparent 55%),
+    oklch(0.14 0.02 80);
+  overscroll-behavior-y: none;
+  text-wrap: pretty;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 3px solid var(--mango);
+  outline-offset: 2px;
+  border-radius: 6px;
+}

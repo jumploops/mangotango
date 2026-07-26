@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mango-tango",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "binding": "ASSETS"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "EVENT_DO",
+        "class_name": "MangoEvent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["MangoEvent"]
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
