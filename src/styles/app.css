@@ -99,10 +99,10 @@
   background: currentColor;
 }
 
-.pill.ok { color: var(--lime); }
-.pill.busy { color: var(--mango); }
+.pill.ok { color: var(--leaf); }
+.pill.busy { color: var(--mango-deep); }
 .pill.busy .dot { animation: pulse 0.9s ease-in-out infinite; }
-.pill.warn { color: var(--mango-deep); }
+.pill.warn { color: var(--blush); }
 .pill.warn .dot { animation: pulse 0.9s ease-in-out infinite; }
 .pill.off { color: var(--danger); }
 
@@ -130,9 +130,9 @@
   from { opacity: 0; transform: translateY(-10px) scale(0.97); }
 }
 
-.banner.warn { border-color: oklch(0.72 0.18 55 / 0.5); }
-.banner.off { border-color: oklch(0.62 0.19 25 / 0.6); color: oklch(0.85 0.08 40); }
-.banner.note { border-color: oklch(0.82 0.19 125 / 0.4); }
+.banner.warn { border-color: oklch(0.62 0.19 48 / 0.55); }
+.banner.off { border-color: oklch(0.55 0.2 25 / 0.6); color: oklch(0.48 0.18 28); }
+.banner.note { border-color: oklch(0.53 0.14 145 / 0.45); }
 
 /* ----------------------------------------------------------------- cards */
 
@@ -148,7 +148,7 @@
      frame), and re-blurring every card over the WebGL canvas each frame is
      what makes expand/collapse chug on phones. A layered translucent
      gradient reads as glass at a fraction of the cost. */
-  background: linear-gradient(165deg, oklch(0.27 0.035 85 / 0.85), oklch(0.2 0.03 85 / 0.9));
+  background: linear-gradient(165deg, oklch(1 0.008 95 / 0.88), oklch(0.97 0.025 90 / 0.92));
   border: 1px solid var(--card-line);
   box-shadow: var(--shadow-card);
   overflow: clip;
@@ -199,7 +199,7 @@
 
 @keyframes freshGlow {
   0%, 100% { box-shadow: var(--shadow-card); }
-  50% { box-shadow: 0 0 0 3px oklch(0.82 0.19 125 / 0.7), var(--shadow-pop); }
+  50% { box-shadow: 0 0 0 3px oklch(0.7 0.21 130 / 0.75), var(--shadow-pop); }
 }
 
 .cardHead {
@@ -241,7 +241,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--lime);
-  color: oklch(0.2 0.05 140);
+  color: oklch(0.24 0.07 145);
 }
 
 .sub { font-size: 0.85rem; color: var(--ink-dim); }
@@ -252,7 +252,7 @@
 }
 
 .needs {
-  color: var(--mango);
+  color: var(--mango-deep);
   font-weight: 650;
 }
 
@@ -263,7 +263,7 @@
   height: 7px;
   margin-right: 7px;
   border-radius: 50%;
-  background: var(--mango);
+  background: var(--mango-deep);
   vertical-align: 1px;
   animation: pulse 1.6s ease-in-out infinite;
 }
@@ -284,7 +284,7 @@
 
 .badge.done {
   border: 0;
-  color: oklch(0.18 0.03 80);
+  color: oklch(0.99 0.01 95);
   background: conic-gradient(from var(--grad-angle),
       oklch(var(--sl) var(--sc) var(--sh)),
       oklch(calc(var(--sl) + 0.08) var(--sc) calc(var(--sh) + 15)),
@@ -350,7 +350,7 @@
   line-height: 1;
   color: oklch(var(--sl) var(--sc) var(--sh));
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 30px oklch(var(--sl) var(--sc) var(--sh) / 0.5);
+  text-shadow: 0 0 30px oklch(var(--sl) var(--sc) var(--sh) / 0.3);
   animation: scorePop 0.45s var(--spring-big);
 }
 
@@ -359,7 +359,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: oklch(calc(var(--sl) + 0.1) calc(var(--sc) * 0.7) var(--sh));
+  color: oklch(calc(var(--sl) - 0.06) calc(var(--sc) * 0.85) var(--sh));
 }
 
 @keyframes scorePop {
@@ -389,13 +389,18 @@
 
 .rate input[type='range']:disabled { opacity: 0.45; }
 
+/* Score-band track: brown -> yellow -> green -> orange -> red, with a
+   compressed whole-mango stripe at the tip where 10 lands. Interpolated in
+   oklch so cross-band hand-offs swing through neighboring hues, not mud. */
 .rate input[type='range']::-webkit-slider-runnable-track {
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(90deg,
-      oklch(0.48 0.06 55), oklch(0.63 0.1 78), oklch(0.78 0.15 100),
-      oklch(0.75 0.18 135), oklch(0.72 0.2 30));
-  box-shadow: inset 0 1px 3px oklch(0 0 0 / 0.5);
+  background: linear-gradient(90deg in oklch,
+      oklch(0.42 0.07 55), oklch(0.48 0.09 60) 11%, oklch(0.68 0.15 95) 22%,
+      oklch(0.71 0.17 98) 33%, oklch(0.58 0.16 135) 44%, oklch(0.53 0.16 148) 56%,
+      oklch(0.66 0.17 65) 67%, oklch(0.61 0.2 48) 78%, oklch(0.55 0.22 30) 89%,
+      oklch(0.52 0.15 150) 93%, oklch(0.71 0.17 95) 96.5%, oklch(0.56 0.22 30) 100%);
+  box-shadow: inset 0 1px 3px oklch(0.35 0.06 60 / 0.35);
 }
 
 .rate input[type='range']::-webkit-slider-thumb {
@@ -404,9 +409,9 @@
   height: 38px;
   margin-top: -12px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, oklch(0.95 0.05 90), oklch(var(--sl, 0.8) var(--sc, 0.15) var(--sh, 90)));
-  border: 3px solid oklch(0.98 0.01 90);
-  box-shadow: 0 4px 14px oklch(0 0 0 / 0.55), 0 0 20px oklch(var(--sl, 0.8) var(--sc, 0.15) var(--sh, 90) / 0.6);
+  background: radial-gradient(circle at 35% 30%, oklch(0.95 0.05 90), oklch(var(--sl, 0.63) var(--sc, 0.15) var(--sh, 90)));
+  border: 3px solid oklch(0.99 0.01 95);
+  box-shadow: 0 4px 14px oklch(0.35 0.08 55 / 0.4), 0 0 20px oklch(var(--sl, 0.63) var(--sc, 0.15) var(--sh, 90) / 0.5);
   transition: transform 0.2s var(--spring-big);
 }
 
@@ -417,18 +422,20 @@
 .rate input[type='range']::-moz-range-track {
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(90deg,
-      oklch(0.48 0.06 55), oklch(0.63 0.1 78), oklch(0.78 0.15 100),
-      oklch(0.75 0.18 135), oklch(0.72 0.2 30));
+  background: linear-gradient(90deg in oklch,
+      oklch(0.42 0.07 55), oklch(0.48 0.09 60) 11%, oklch(0.68 0.15 95) 22%,
+      oklch(0.71 0.17 98) 33%, oklch(0.58 0.16 135) 44%, oklch(0.53 0.16 148) 56%,
+      oklch(0.66 0.17 65) 67%, oklch(0.61 0.2 48) 78%, oklch(0.55 0.22 30) 89%,
+      oklch(0.52 0.15 150) 93%, oklch(0.71 0.17 95) 96.5%, oklch(0.56 0.22 30) 100%);
 }
 
 .rate input[type='range']::-moz-range-thumb {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, oklch(0.95 0.05 90), oklch(var(--sl, 0.8) var(--sc, 0.15) var(--sh, 90)));
-  border: 3px solid oklch(0.98 0.01 90);
-  box-shadow: 0 4px 14px oklch(0 0 0 / 0.55);
+  background: radial-gradient(circle at 35% 30%, oklch(0.95 0.05 90), oklch(var(--sl, 0.63) var(--sc, 0.15) var(--sh, 90)));
+  border: 3px solid oklch(0.99 0.01 95);
+  box-shadow: 0 4px 14px oklch(0.35 0.08 55 / 0.4);
 }
 
 .scale {
@@ -439,6 +446,56 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-top: 2px;
+}
+
+/* ------------------------------------------------- score 10: the whole mango
+   A 10 isn't one color — it's the entire fruit: unripe green, golden flesh,
+   ripe blush, all at once. */
+
+.rate.nirvana .big {
+  /* Horizontal, not the diagonal --grad-skin: across only two glyphs the
+     diagonal squeezes the green out of view. */
+  background: linear-gradient(90deg in oklch,
+      oklch(0.5 0.15 150), oklch(0.52 0.15 145) 26%, oklch(0.69 0.17 95) 58%, oklch(0.56 0.22 30));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 16px oklch(0.66 0.15 92 / 0.55));
+}
+
+.card.nirvana .badge.done {
+  color: oklch(0.99 0.01 95);
+  text-shadow: 0 1px 3px oklch(0.3 0.08 40 / 0.5);
+  background: conic-gradient(from var(--grad-angle),
+      oklch(0.52 0.15 150), oklch(0.71 0.17 95), oklch(0.56 0.22 30),
+      oklch(0.71 0.17 95), oklch(0.52 0.15 150));
+}
+
+.card.nirvana.rated {
+  border-color: transparent;
+  background:
+    linear-gradient(165deg, oklch(1 0.008 95 / 0.88), oklch(0.97 0.025 90 / 0.92)) padding-box,
+    var(--grad-skin) border-box;
+}
+
+.rate.nirvana input[type='range']::-webkit-slider-thumb {
+  background:
+    radial-gradient(circle at 35% 30%, oklch(0.97 0.03 95 / 0.9), oklch(1 0 0 / 0) 55%),
+    linear-gradient(135deg, oklch(0.52 0.15 150), oklch(0.71 0.17 95) 48%, oklch(0.56 0.22 30));
+}
+
+.rate.nirvana input[type='range']::-moz-range-thumb {
+  background:
+    radial-gradient(circle at 35% 30%, oklch(0.97 0.03 95 / 0.9), oklch(1 0 0 / 0) 55%),
+    linear-gradient(135deg, oklch(0.52 0.15 150), oklch(0.71 0.17 95) 48%, oklch(0.56 0.22 30));
+}
+
+.sumRow.nirvana .sumScore {
+  background: var(--grad-skin);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 /* --------------------------------------------------------------- results */
@@ -487,7 +544,7 @@
 .resBarTrack {
   height: 10px;
   border-radius: 999px;
-  background: oklch(0 0 0 / 0.3);
+  background: oklch(0.55 0.06 70 / 0.18);
   overflow: hidden;
 }
 
@@ -515,7 +572,7 @@
   max-width: 480px;
   margin: 0 auto;
   padding: 12px 16px calc(var(--safe-b) + 12px);
-  background: linear-gradient(oklch(0.14 0.02 80 / 0), oklch(0.13 0.02 80 / 0.92) 30%);
+  background: linear-gradient(oklch(0.97 0.03 95 / 0), oklch(0.98 0.03 95 / 0.92) 30%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -544,10 +601,10 @@
   stroke-linecap: round;
 }
 
-.progress .track { stroke: oklch(1 0 0 / 0.12); }
+.progress .track { stroke: oklch(0.35 0.05 70 / 0.15); }
 
 .progress .fill {
-  stroke: var(--lime);
+  stroke: var(--leaf);
   stroke-dasharray: 97.4;
   stroke-dashoffset: calc(97.4 - 97.4 * var(--pct) / 100);
   transition: stroke-dashoffset 0.7s var(--spring);
@@ -572,10 +629,10 @@
   font-weight: 850;
   font-size: 1.02rem;
   letter-spacing: 0.01em;
-  color: oklch(0.16 0.04 60);
+  color: oklch(0.99 0.01 95);
   background: var(--grad-hot);
   background-size: 220% 100%;
-  box-shadow: 0 6px 24px oklch(0.72 0.18 55 / 0.45);
+  box-shadow: 0 6px 24px oklch(0.62 0.19 48 / 0.4);
   transition: transform 0.3s var(--spring-big), box-shadow 0.3s, background-position 0.6s;
 }
 
@@ -587,7 +644,7 @@
 }
 
 .cta:disabled {
-  background: oklch(0.32 0.02 80);
+  background: oklch(0.88 0.02 90);
   color: var(--ink-faint);
   box-shadow: none;
 }
@@ -598,8 +655,9 @@
   font-size: 1rem;
   padding: 14px;
   border-radius: 999px;
-  border: 1px solid oklch(0.82 0.19 125 / 0.4);
-  background: oklch(0.82 0.19 125 / 0.1);
+  border: 1px solid oklch(0.53 0.14 145 / 0.45);
+  background: oklch(0.8 0.21 128 / 0.16);
+  color: oklch(0.4 0.12 148);
 }
 
 /* ---------------------------------------------------------- bottom sheet */
@@ -611,7 +669,7 @@
   max-width: 480px;
   margin: auto auto 0;
   border-radius: var(--r-lg) var(--r-lg) 0 0;
-  background: oklch(0.21 0.03 80 / 0.92);
+  background: oklch(0.99 0.015 95 / 0.92);
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
   color: var(--ink);
@@ -620,7 +678,7 @@
 }
 
 .sheet::backdrop {
-  background: oklch(0.1 0.02 80 / 0.6);
+  background: oklch(0.4 0.07 60 / 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -654,7 +712,7 @@
   width: 44px;
   height: 5px;
   border-radius: 999px;
-  background: oklch(1 0 0 / 0.25);
+  background: oklch(0.45 0.05 70 / 0.3);
   margin: 4px auto 0;
 }
 
@@ -676,14 +734,14 @@
 .nameLabel input {
   border: 1px solid var(--card-line);
   border-radius: var(--r-md);
-  background: oklch(0 0 0 / 0.3);
+  background: oklch(1 0 0 / 0.65);
   padding: 15px 16px;
   font-size: 1.05rem;
   font-weight: 600;
 }
 
 .nameLabel input:focus {
-  outline: 2px solid var(--mango);
+  outline: 2px solid var(--mango-deep);
   border-color: transparent;
 }
 
@@ -693,7 +751,7 @@
   display: grid;
   gap: 4px;
   padding: 4px 2px;
-  border-block: 1px solid oklch(1 0 0 / 0.08);
+  border-block: 1px solid oklch(0.45 0.07 70 / 0.15);
   overscroll-behavior: contain;
 }
 
@@ -713,7 +771,7 @@
   color: oklch(var(--sl) var(--sc) var(--sh));
 }
 
-.formError { margin: 0; color: oklch(0.8 0.12 30); font-size: 0.9rem; }
+.formError { margin: 0; color: oklch(0.5 0.19 28); font-size: 0.9rem; }
 
 .sheetBtns {
   display: grid;
@@ -750,7 +808,7 @@
   font-weight: 700;
   font-size: 0.95rem;
   text-align: center;
-  background: oklch(0.25 0.04 85 / 0.9);
+  background: oklch(0.99 0.02 95 / 0.92);
   border: 1px solid var(--card-line);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -758,8 +816,8 @@
   animation: toastIn 0.5s var(--spring-big);
 }
 
-.toast.party { border-color: oklch(0.82 0.19 125 / 0.6); }
-.toast.warn { border-color: oklch(0.72 0.18 55 / 0.6); }
+.toast.party { border-color: oklch(0.53 0.14 145 / 0.6); }
+.toast.warn { border-color: oklch(0.62 0.19 48 / 0.6); }
 
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(-16px) scale(0.9); }

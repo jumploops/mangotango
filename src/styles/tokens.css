@@ -20,23 +20,25 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Palette — jungle night + mango flesh */
-  --ink: oklch(0.96 0.02 95);
-  --ink-dim: oklch(0.78 0.03 95);
-  --ink-faint: oklch(0.62 0.03 95);
-  --night: oklch(0.16 0.02 80);
-  --card: oklch(0.24 0.03 85 / 0.62);
-  --card-line: oklch(0.6 0.08 85 / 0.35);
-  --mango: oklch(0.8 0.16 75);
-  --mango-deep: oklch(0.72 0.18 55);
-  --blush: oklch(0.62 0.21 30);
-  --lime: oklch(0.82 0.19 125);
-  --leaf: oklch(0.62 0.14 145);
-  --danger: oklch(0.62 0.19 25);
+  /* Palette — tropical daylight + mango flesh */
+  --ink: oklch(0.33 0.05 55);
+  --ink-dim: oklch(0.47 0.05 55);
+  --ink-faint: oklch(0.58 0.04 60);
+  --day: oklch(0.97 0.03 95);
+  --card: oklch(1 0.01 95 / 0.78);
+  --card-line: oklch(0.85 0.07 80 / 0.7);
+  --mango: oklch(0.78 0.16 72);
+  --mango-deep: oklch(0.62 0.19 48);
+  --blush: oklch(0.6 0.22 25);
+  --lime: oklch(0.8 0.21 128);
+  --leaf: oklch(0.53 0.14 145);
+  --danger: oklch(0.55 0.2 25);
 
   --grad-hot: linear-gradient(100deg, var(--blush), var(--mango-deep) 30%, var(--mango) 55%, var(--lime) 100%);
+  /* A whole ripe mango: unripe green -> golden flesh -> ripe blush. */
+  --grad-skin: linear-gradient(115deg, oklch(0.52 0.15 150), oklch(0.71 0.17 95) 48%, oklch(0.56 0.22 30) 100%);
 
   /* Springy easings via linear() */
   --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%,
@@ -50,8 +52,8 @@
   --r-md: 18px;
   --r-sm: 12px;
 
-  --shadow-card: 0 8px 30px oklch(0 0 0 / 0.35);
-  --shadow-pop: 0 16px 50px oklch(0 0 0 / 0.5);
+  --shadow-card: 0 8px 30px oklch(0.45 0.1 60 / 0.16);
+  --shadow-pop: 0 16px 50px oklch(0.4 0.12 55 / 0.25);
 
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -74,11 +76,11 @@ body {
   min-height: 100dvh;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
-  /* Fallback nectar if WebGL is unavailable — the canvas paints over this. */
+  /* Fallback sunshine if WebGL is unavailable — the canvas paints over this. */
   background:
-    radial-gradient(120% 90% at 50% -10%, oklch(0.35 0.09 70 / 0.55), transparent 60%),
-    radial-gradient(100% 70% at 85% 100%, oklch(0.3 0.1 140 / 0.4), transparent 55%),
-    oklch(0.14 0.02 80);
+    radial-gradient(120% 90% at 50% -10%, oklch(0.92 0.09 85 / 0.9), transparent 60%),
+    radial-gradient(100% 70% at 85% 100%, oklch(0.9 0.1 140 / 0.55), transparent 55%),
+    oklch(0.97 0.03 95);
   overscroll-behavior-y: none;
   text-wrap: pretty;
 }
@@ -96,7 +98,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid var(--mango);
+  outline: 3px solid var(--mango-deep);
   outline-offset: 2px;
   border-radius: 6px;
 }

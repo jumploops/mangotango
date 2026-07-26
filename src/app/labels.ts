@@ -10,17 +10,21 @@ export interface ScoreLook {
   h: number;
 }
 
+/* Score bands (lightness ≤ 0.71 so text reads on white-glass cards):
+   1–2 brown, 3–4 yellow, 5–6 green, 7–8 orange, 9 red.
+   10 is the whole mango — green+yellow+red at once; the base color below is
+   its fallback, the tri-color display lives in CSS behind `.nirvana`. */
 export const SCORE_LOOKS: Record<number, ScoreLook> = {
-  1: { label: 'compost tier', emoji: '🫠', l: 0.48, c: 0.06, h: 55 },
-  2: { label: 'stringy sadness', emoji: '😖', l: 0.55, c: 0.08, h: 65 },
-  3: { label: 'meh-ngo', emoji: '😕', l: 0.63, c: 0.1, h: 78 },
-  4: { label: 'it’s fine', emoji: '😐', l: 0.72, c: 0.13, h: 90 },
-  5: { label: 'solid snack', emoji: '🙂', l: 0.78, c: 0.15, h: 100 },
-  6: { label: 'pretty tasty', emoji: '😊', l: 0.8, c: 0.16, h: 110 },
-  7: { label: 'juicy business', emoji: '😋', l: 0.78, c: 0.17, h: 122 },
-  8: { label: 'dangerously good', emoji: '🤤', l: 0.75, c: 0.18, h: 135 },
-  9: { label: 'transcendent', emoji: '🤩', l: 0.73, c: 0.19, h: 143 },
-  10: { label: 'MANGO NIRVANA', emoji: '👑', l: 0.72, c: 0.2, h: 30 },
+  1: { label: 'compost tier', emoji: '🫠', l: 0.42, c: 0.07, h: 55 },
+  2: { label: 'stringy sadness', emoji: '😖', l: 0.48, c: 0.09, h: 60 },
+  3: { label: 'meh-ngo', emoji: '😕', l: 0.68, c: 0.15, h: 95 },
+  4: { label: 'it’s fine', emoji: '😐', l: 0.71, c: 0.17, h: 98 },
+  5: { label: 'solid snack', emoji: '🙂', l: 0.58, c: 0.16, h: 135 },
+  6: { label: 'pretty tasty', emoji: '😊', l: 0.53, c: 0.16, h: 148 },
+  7: { label: 'juicy business', emoji: '😋', l: 0.66, c: 0.17, h: 65 },
+  8: { label: 'dangerously good', emoji: '🤤', l: 0.61, c: 0.2, h: 48 },
+  9: { label: 'transcendent', emoji: '🤩', l: 0.55, c: 0.22, h: 30 },
+  10: { label: 'MANGO NIRVANA', emoji: '👑', l: 0.56, c: 0.22, h: 30 },
 };
 
 export function look(score: number): ScoreLook {

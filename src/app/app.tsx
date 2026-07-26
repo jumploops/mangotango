@@ -154,7 +154,7 @@ function RatingSlider({ mango, disabled }: { mango: Mango; disabled: boolean }) 
   };
 
   return (
-    <div class={`rate ${score === null ? 'unrated' : ''}`} style={score !== null ? scoreVars(score) : ''}>
+    <div class={`rate ${score === null ? 'unrated' : ''} ${score === 10 ? 'nirvana' : ''}`} style={score !== null ? scoreVars(score) : ''}>
       <div class="readout" aria-hidden="true">
         {score === null ? (
           <span class="hint">slide to rate ↓</span>
@@ -208,7 +208,7 @@ function MangoCard({ mango, index }: { mango: Mango; index: number }) {
 
   return (
     <article
-      class={`card ${open ? 'open' : ''} ${rated ? 'rated' : 'todo'} ${isNew ? 'fresh' : ''}`}
+      class={`card ${open ? 'open' : ''} ${rated ? 'rated' : 'todo'} ${isNew ? 'fresh' : ''} ${rated?.score === 10 ? 'nirvana' : ''}`}
       style={`--i:${index};${rated ? scoreVars(rated.score) : ''}`}
     >
       <button
@@ -379,7 +379,7 @@ function SubmitSheet() {
             const r = ratings.value[m.id];
             const s = look(r.score);
             return (
-              <div class="sumRow" key={m.id} style={scoreVars(r.score)}>
+              <div class={`sumRow ${r.score === 10 ? 'nirvana' : ''}`} key={m.id} style={scoreVars(r.score)}>
                 <span class="sumName">{m.name}</span>
                 <span class="sumScore">
                   {r.score} <small>{s.emoji}</small>

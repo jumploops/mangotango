@@ -43,20 +43,20 @@ void main() {
                 fbm(p + 2.6 * q + vec2(8.3, 2.8) - t * 0.3));
   float f = fbm(p + 3.0 * r);
 
-  // Palette: deep jungle night -> mango flesh -> sunrise blush.
-  vec3 night  = vec3(0.055, 0.045, 0.03);
-  vec3 jungle = vec3(0.06, 0.13, 0.07);
-  vec3 mango  = vec3(0.95, 0.62, 0.12);
-  vec3 blush  = vec3(0.88, 0.25, 0.14);
-  vec3 lime   = vec3(0.55, 0.75, 0.2);
+  // Palette: sunlit cream -> mango flesh -> sunrise blush.
+  vec3 cream = vec3(0.995, 0.955, 0.86);
+  vec3 sunny = vec3(1.0, 0.84, 0.42);
+  vec3 mango = vec3(1.0, 0.63, 0.16);
+  vec3 blush = vec3(1.0, 0.47, 0.36);
+  vec3 lime  = vec3(0.66, 0.85, 0.34);
 
-  vec3 col = mix(night, jungle, smoothstep(0.1, 0.55, f));
-  col = mix(col, mango * 0.55, smoothstep(0.45, 0.78, f) * 0.8);
-  col = mix(col, blush * 0.5, smoothstep(0.68, 0.95, length(q) * f) * 0.7);
-  col = mix(col, lime * 0.35, smoothstep(0.5, 0.9, r.y) * 0.35);
+  vec3 col = mix(cream, sunny, smoothstep(0.1, 0.62, f) * 0.75);
+  col = mix(col, mango, smoothstep(0.5, 0.85, f) * 0.5);
+  col = mix(col, blush, smoothstep(0.68, 0.95, length(q) * f) * 0.45);
+  col = mix(col, lime, smoothstep(0.55, 0.9, r.y) * 0.28);
 
-  // Gentle top-glow vignette so cards stay readable.
-  col *= 0.55 + 0.45 * smoothstep(1.25, 0.15, length(uv - vec2(0.5, 0.85)));
+  // Gentle sun-wash toward the card area so the white glass stays readable.
+  col = mix(col, vec3(1.0, 0.97, 0.9), 0.4 * smoothstep(1.25, 0.15, length(uv - vec2(0.5, 0.85))));
 
   gl_FragColor = vec4(col, 1.0);
 }
