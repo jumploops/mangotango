@@ -25,6 +25,7 @@ import type {
   SubmittedScore,
 } from '../../shared/types';
 import { isValidClientId, isValidScore } from '../../shared/types';
+import CATALOG from '../../shared/mangoes.json';
 
 const EVENT_ID = 'mango-tango';
 const ADMIN_HEADER = 'x-mt-admin';
@@ -47,11 +48,16 @@ const SCHEMA = [
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
+    details TEXT NOT NULL DEFAULT '',
     sort_order INTEGER NOT NULL,
     available INTEGER NOT NULL DEFAULT 1,
     required_for_submit INTEGER NOT NULL DEFAULT 1,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
   )`,
   `CREATE TABLE IF NOT EXISTS participants (
     client_id TEXT PRIMARY KEY,
@@ -91,13 +97,18 @@ const SCHEMA = [
   )`,
 ];
 
-const SEED_MANGOES: Array<[name: string, description: string]> = [
-  ['Alphonso', 'The self-proclaimed king of mangoes. Saffron flesh, zero fiber, maximum drama.'],
-  ['Ataulfo (Honey)', 'Small, golden, custardy. The one that ruins grocery-store mangoes forever.'],
-  ['Kent', 'Big, juicy, classically sweet. A crowd-pleaser that shows up and delivers.'],
-  ['Keitt', 'The late-season sleeper. Green outside even when ripe — trust the squeeze, not the color.'],
-  ['Tommy Atkins', 'The supermarket workhorse. Fibrous? Yes. Beautiful blush? Also yes.'],
-  ['Nam Dok Mai', 'Thailand’s golden teardrop. Floral, silky, dangerously easy to eat three of.'],
+/** The event's mango catalog lives in shared/mangoes.json; bump this when the
+    catalog changes so existing events pick up the update on next boot. */
+const SEED_VERSION = '2';
+
+/** Placeholder demo mangoes from seed v1 — replaced by the real catalog. */
+const LEGACY_SAMPLES = [
+  'Alphonso',
+  'Ataulfo (Honey)',
+  'Kent',
+  'Keitt',
+  'Tommy Atkins',
+  'Nam Dok Mai',
 ];
 
 interface EventRow extends Record<string, SqlStorageValue> {
@@ -118,6 +129,7 @@ interface MangoRow extends Record<string, SqlStorageValue> {
   id: string;
   name: string;
   description: string;
+  details: string;
   sort_order: number;
   available: number;
   required_for_submit: number;
@@ -170,7 +182,14 @@ export class MangoEvent extends DurableObject<Env> {
     super(ctx, env);
     this.sql = ctx.storage.sql;
     for (const stmt of SCHEMA) this.sql.exec(stmt);
+    // Additive migration for events created before the details column existed.
+    try {
+      this.sql.exec(`ALTER TABLE mangoes ADD COLUMN details TEXT NOT NULL DEFAULT ''`);
+    } catch {
+      // Column already exists (fresh schema or already migrated).
+    }
     this.seedIfEmpty();
+    this.syncSeedCatalog();
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
   }
 
@@ -182,15 +201,55 @@ export class MangoEvent extends DurableObject<Env> {
         `INSERT INTO event (id, name, status, created_at, updated_at) VALUES (?, ?, 'open', ?, ?)`,
         EVENT_ID, 'Mango Tango', now, now,
       );
-      SEED_MANGOES.forEach(([name, description], i) => {
-        this.sql.exec(
-          `INSERT INTO mangoes (id, name, description, sort_order, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          crypto.randomUUID(), name, description, (i + 1) * 10, now, now,
-        );
-      });
-      this.audit('event.seeded', `Seeded event with ${SEED_MANGOES.length} starter mangoes`);
+      this.audit('event.seeded', 'Event created');
     }
+  }
+
+  /** One-time (per SEED_VERSION) sync of shared/mangoes.json into the DB.
+      Upserts by name so host edits to ids/ratings survive catalog updates;
+      also retires the v1 placeholder samples along with their ratings. */
+  private syncSeedCatalog(): void {
+    const applied = this.sql
+      .exec<{ value: string }>(`SELECT value FROM meta WHERE key = 'seed_version'`)
+      .toArray()[0]?.value;
+    if (applied === SEED_VERSION) return;
+
+    const now = Date.now();
+    const catalogNames = new Set(CATALOG.map((m) => m.name));
+    for (const name of LEGACY_SAMPLES) {
+      if (catalogNames.has(name)) continue;
+      for (const row of this.sql
+        .exec<{ id: string }>('SELECT id FROM mangoes WHERE name = ?', name)
+        .toArray()) {
+        this.sql.exec('DELETE FROM ratings WHERE mango_id = ?', row.id);
+        this.sql.exec('DELETE FROM submitted_scores WHERE mango_id = ?', row.id);
+        this.sql.exec('DELETE FROM mangoes WHERE id = ?', row.id);
+      }
+    }
+    CATALOG.forEach((m, i) => {
+      const existing = this.sql
+        .exec<{ id: string }>('SELECT id FROM mangoes WHERE name = ?', m.name)
+        .toArray()[0];
+      if (existing) {
+        this.sql.exec(
+          'UPDATE mangoes SET description = ?, details = ?, updated_at = ? WHERE id = ?',
+          m.summary, m.details, now, existing.id,
+        );
+      } else {
+        this.sql.exec(
+          `INSERT INTO mangoes (id, name, description, details, sort_order, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          crypto.randomUUID(), m.name, m.summary, m.details, (i + 1) * 10, now, now,
+        );
+      }
+    });
+    this.sql.exec(
+      `INSERT INTO meta (key, value) VALUES ('seed_version', ?)
+       ON CONFLICT (key) DO UPDATE SET value = excluded.value`,
+      SEED_VERSION,
+    );
+    this.bumpRevision();
+    this.audit('event.catalog_synced', `Catalog v${SEED_VERSION}: ${CATALOG.length} mangoes`);
   }
 
   // -------------------------------------------------------------------------
@@ -260,6 +319,7 @@ export class MangoEvent extends DurableObject<Env> {
       id: row.id,
       name: row.name,
       description: row.description,
+      details: row.details,
       sortOrder: row.sort_order,
       available: !!row.available,
       requiredForSubmit: !!row.required_for_submit,
@@ -698,6 +758,7 @@ export class MangoEvent extends DurableObject<Env> {
     const name = cleanText(body.name, 60);
     if (!name) return err('Mango needs a name (max 60 characters)', 'invalid', 400);
     const description = typeof body.description === 'string' ? body.description.trim().slice(0, 400) : '';
+    const details = typeof body.details === 'string' ? body.details.trim().slice(0, 8000) : '';
     const requiredForSubmit = body.requiredForSubmit === undefined ? true : !!body.requiredForSubmit;
 
     const now = Date.now();
@@ -705,9 +766,9 @@ export class MangoEvent extends DurableObject<Env> {
       this.sql.exec<{ m: number | null }>('SELECT MAX(sort_order) AS m FROM mangoes').one().m ?? 0;
     const id = crypto.randomUUID();
     this.sql.exec(
-      `INSERT INTO mangoes (id, name, description, sort_order, available, required_for_submit, created_at, updated_at)
-       VALUES (?, ?, ?, ?, 1, ?, ?, ?)`,
-      id, name, description, maxOrder + 10, requiredForSubmit ? 1 : 0, now, now,
+      `INSERT INTO mangoes (id, name, description, details, sort_order, available, required_for_submit, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)`,
+      id, name, description, details, maxOrder + 10, requiredForSubmit ? 1 : 0, now, now,
     );
     this.bumpRevision();
     this.audit('mango.added', name);
@@ -736,6 +797,12 @@ export class MangoEvent extends DurableObject<Env> {
       sets.push('description = ?');
       vals.push(body.description.trim().slice(0, 400));
       changes.push('description updated');
+    }
+    if (body.details !== undefined) {
+      if (typeof body.details !== 'string') return err('Invalid details', 'invalid', 400);
+      sets.push('details = ?');
+      vals.push(body.details.trim().slice(0, 8000));
+      changes.push('details updated');
     }
     if (body.available !== undefined) {
       if (typeof body.available !== 'boolean') return err('Invalid available', 'invalid', 400);

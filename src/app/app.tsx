@@ -1,8 +1,10 @@
+import { signal } from '@preact/signals';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Mango } from '../../shared/types';
 import { mangoBurst } from './confetti';
 import { thump, tick } from './haptics';
 import { look, scoreVars } from './labels';
+import { renderMarkdown } from './md';
 import { flushNow, hasPending, setRating, submitRanking } from './net';
 import {
   canSubmit,
@@ -240,7 +242,19 @@ function MangoCard({ mango, index }: { mango: Mango; index: number }) {
       </button>
       <div class="cardBody">
         <div class="cardBodyInner">
-          {mango.description ? <p class="desc">{mango.description}</p> : null}
+          {mango.description ? (
+            <p class="desc">
+              {mango.description}
+              {mango.details ? (
+                <>
+                  {' '}
+                  <button class="readMore" onClick={() => (detailsMango.value = mango)}>
+                    read more
+                  </button>
+                </>
+              ) : null}
+            </p>
+          ) : null}
           <RatingSlider mango={mango} disabled={locked} />
         </div>
       </div>
@@ -316,6 +330,41 @@ function Results() {
 }
 
 // ---------------------------------------------------------------------------
+
+/** Which mango's long-form details popup is open (null = closed). */
+const detailsMango = signal<Mango | null>(null);
+
+function DetailsSheet() {
+  const m = detailsMango.value;
+  const ref = useRef<HTMLDialogElement>(null);
+  // Keep the last mango rendered while the close animation plays out.
+  const last = useRef<Mango | null>(null);
+  if (m) last.current = m;
+  const shown = m ?? last.current;
+
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (m && !d.open) d.showModal();
+    if (!m && d.open) d.close();
+  });
+
+  return (
+    <dialog class="sheet" ref={ref} onClose={() => (detailsMango.value = null)} closedby="any">
+      {shown ? (
+        <div class="sheetInner">
+          <div class="grabber" aria-hidden="true" />
+          <h2>🥭 {shown.name}</h2>
+          {/* renderMarkdown escapes all HTML before adding its own tags. */}
+          <div class="mdBody" dangerouslySetInnerHTML={{ __html: renderMarkdown(shown.details) }} />
+          <button class="ghost" onClick={() => (detailsMango.value = null)}>
+            Back to rating
+          </button>
+        </div>
+      ) : null}
+    </dialog>
+  );
+}
 
 function SubmitSheet() {
   const ref = useRef<HTMLDialogElement>(null);
@@ -500,6 +549,7 @@ export function App() {
       <MangoList />
       <SubmitBar />
       <SubmitSheet />
+      <DetailsSheet />
       <Toasts />
     </div>
   );

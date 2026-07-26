@@ -274,10 +274,11 @@ function EventControls() {
 function MangoEditor({ mango, onDone }: { mango: MangoAdminInfo; onDone: () => void }) {
   const [name, setName] = useState(mango.name);
   const [description, setDescription] = useState(mango.description);
+  const [details, setDetails] = useState(mango.details);
   const save = async (e: Event) => {
     e.preventDefault();
     try {
-      await api(`/api/admin/mango/${mango.id}`, { name, description });
+      await api(`/api/admin/mango/${mango.id}`, { name, description, details });
       say('Mango updated');
       onDone();
     } catch (err) {
@@ -291,8 +292,15 @@ function MangoEditor({ mango, onDone }: { mango: MangoAdminInfo; onDone: () => v
         value={description}
         maxLength={400}
         rows={2}
-        placeholder="Description guests see"
+        placeholder="Short summary guests see on the card"
         onInput={(e) => setDescription((e.currentTarget as HTMLTextAreaElement).value)}
+      />
+      <textarea
+        value={details}
+        maxLength={8000}
+        rows={6}
+        placeholder="Long description (markdown) for the read-more popup"
+        onInput={(e) => setDetails((e.currentTarget as HTMLTextAreaElement).value)}
       />
       <div class="rowBtns">
         <button class="mini" type="submit">Save</button>

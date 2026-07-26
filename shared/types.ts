@@ -20,7 +20,10 @@ export interface EventConfig {
 export interface Mango {
   id: string;
   name: string;
+  /** Short summary shown on the card. */
   description: string;
+  /** Long-form description in markdown, shown in the "read more" popup. */
+  details: string;
   sortOrder: number;
   available: boolean;
   requiredForSubmit: boolean;

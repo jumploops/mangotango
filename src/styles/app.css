@@ -327,6 +327,63 @@
   line-height: 1.5;
 }
 
+.readMore {
+  border: 0;
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  font-weight: 700;
+  color: var(--mango-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* ------------------------------------------------- details popup (markdown) */
+
+.mdBody {
+  max-height: 58dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-dim);
+  border-block: 1px solid oklch(0.45 0.07 70 / 0.15);
+  padding-block: 4px 12px;
+}
+
+.mdBody p {
+  margin: 10px 0;
+}
+
+.mdBody strong {
+  color: var(--ink);
+}
+
+.mdBody h3,
+.mdBody h4,
+.mdBody h5,
+.mdBody h6 {
+  margin: 18px 0 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mango-deep);
+}
+
+.mdBody ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 5px;
+}
+
+.mdBody li::marker {
+  color: var(--mango);
+}
+
 /* ---------------------------------------------------------------- slider */
 
 .rate { text-align: center; }
@@ -702,7 +759,8 @@
   }
 }
 
-.sheet form {
+.sheet form,
+.sheet .sheetInner {
   padding: 10px 20px calc(var(--safe-b) + 20px);
   display: grid;
   gap: 14px;
