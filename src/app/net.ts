@@ -82,6 +82,26 @@ export function setRating(mangoId: string, score: number): void {
   scheduleFlush(650);
 }
 
+/** Undo a rating ("haven't tried it yet") — queued like any other write,
+    sent as the score-0 tombstone so stale writes can't resurrect it. */
+export function clearRating(mangoId: string): void {
+  const clientRev = nextRev();
+  const next = { ...ratings.value };
+  delete next[mangoId];
+  ratings.value = next;
+  pending.set(mangoId, { score: 0, clientRev });
+  persistPending();
+  saveState.value = 'saving';
+  scheduleFlush(300);
+}
+
+/** Mango ids with an unflushed clear — their server rating is already stale. */
+export function pendingClearIds(): Set<string> {
+  const out = new Set<string>();
+  for (const [id, p] of pending) if (p.score === 0) out.add(id);
+  return out;
+}
+
 export function flushNow(): void {
   scheduleFlush(0);
 }
@@ -117,7 +137,13 @@ async function flush(): Promise<void> {
         // Server wins if it holds something newer (e.g. another tab).
         const local = ratings.value[mangoId];
         if (!local || data.rating.clientRev >= local.clientRev) {
-          ratings.value = { ...ratings.value, [mangoId]: data.rating };
+          if (data.rating.score === 0) {
+            const next = { ...ratings.value };
+            delete next[mangoId];
+            ratings.value = next;
+          } else {
+            ratings.value = { ...ratings.value, [mangoId]: data.rating };
+          }
         }
         retryDelay = 1000;
       } else if (res.status === 409) {
@@ -200,7 +226,7 @@ export function connect(): void {
       return;
     }
     if (msg.type === 'hello' && msg.state.role === 'guest') {
-      applyFullState(msg.state, pendingIds());
+      applyFullState(msg.state, pendingIds(), pendingClearIds());
     } else if (msg.type === 'patch') {
       applyEventSnapshot(msg.event, msg.mangoes, msg.results);
     }
@@ -244,7 +270,7 @@ export async function refreshState(): Promise<void> {
     const res = await fetch(`/api/state?clientId=${encodeURIComponent(clientId)}`);
     if (!res.ok) return;
     const state = (await res.json()) as GuestState;
-    applyFullState(state, pendingIds());
+    applyFullState(state, pendingIds(), pendingClearIds());
     if (conn.value !== 'live') conn.value = 'offline';
     if (pending.size > 0) flushNow();
   } catch {

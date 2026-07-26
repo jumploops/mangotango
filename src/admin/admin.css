@@ -164,6 +164,18 @@ body {
 .msgRow { display: flex; gap: 8px; flex-wrap: wrap; }
 .msgRow input { flex: 1; min-width: 220px; }
 
+.resetRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--card-line);
+}
+
+.resetHint { font-size: 0.8rem; }
+
 input[type='text'],
 input[type='password'],
 input:not([type]),

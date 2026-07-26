@@ -107,6 +107,9 @@ export function applyEventSnapshot(
     if (before && before.message !== ev.message && ev.message) {
       toast(`📣 ${ev.message}`, 'info');
     }
+    if (before && before.epoch !== ev.epoch) {
+      toast('🧹 Fresh start! The board is clean — happy tasting!', 'party');
+    }
   }
 
   event.value = ev;
@@ -118,7 +121,11 @@ export function applyEventSnapshot(
 }
 
 /** Apply a full guest state (initial load / reconnect resync). */
-export function applyFullState(state: GuestState, pendingIds: Set<string>): void {
+export function applyFullState(
+  state: GuestState,
+  pendingIds: Set<string>,
+  pendingClears: Set<string> = new Set(),
+): void {
   applyEventSnapshot(state.event, state.mangoes, state.results);
   // Server is authoritative except for ratings we haven't flushed yet.
   const merged: Record<string, RatingEntry> = { ...state.ratings };
@@ -128,6 +135,8 @@ export function applyFullState(state: GuestState, pendingIds: Set<string>): void
       merged[id] = local;
     }
   }
+  // Unflushed clears: the server snapshot still holds the old score — drop it.
+  for (const id of pendingClears) delete merged[id];
   ratings.value = merged;
   submission.value = state.submission;
   loaded.value = true;

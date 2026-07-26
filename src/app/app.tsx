@@ -5,7 +5,7 @@ import { mangoBurst } from './confetti';
 import { thump, tick } from './haptics';
 import { look, scoreVars } from './labels';
 import { renderMarkdown } from './md';
-import { flushNow, hasPending, setRating, submitRanking } from './net';
+import { clearRating, flushNow, hasPending, setRating, submitRanking } from './net';
 import {
   canSubmit,
   celebrating,
@@ -196,6 +196,18 @@ function RatingSlider({ mango, disabled }: { mango: Mango; disabled: boolean }) 
         <span>1 · worst</span>
         <span>10 · best</span>
       </div>
+      {score !== null && !disabled ? (
+        <button
+          class="clearRate"
+          onClick={() => {
+            setPreview(null);
+            clearRating(mango.id);
+            tick();
+          }}
+        >
+          ↺ Haven’t tried it? Clear rating
+        </button>
+      ) : null}
     </div>
   );
 }

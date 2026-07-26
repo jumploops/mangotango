@@ -41,6 +41,7 @@ const SCHEMA = [
     results_visible INTEGER NOT NULL DEFAULT 0,
     message TEXT NOT NULL DEFAULT '',
     revision INTEGER NOT NULL DEFAULT 1,
+    epoch INTEGER NOT NULL DEFAULT 0,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL
   )`,
@@ -121,6 +122,7 @@ interface EventRow extends Record<string, SqlStorageValue> {
   results_visible: number;
   message: string;
   revision: number;
+  epoch: number;
   created_at: number;
   updated_at: number;
 }
@@ -182,11 +184,16 @@ export class MangoEvent extends DurableObject<Env> {
     super(ctx, env);
     this.sql = ctx.storage.sql;
     for (const stmt of SCHEMA) this.sql.exec(stmt);
-    // Additive migration for events created before the details column existed.
+    // Additive migrations for events created before these columns existed.
     try {
       this.sql.exec(`ALTER TABLE mangoes ADD COLUMN details TEXT NOT NULL DEFAULT ''`);
     } catch {
       // Column already exists (fresh schema or already migrated).
+    }
+    try {
+      this.sql.exec(`ALTER TABLE event ADD COLUMN epoch INTEGER NOT NULL DEFAULT 0`);
+    } catch {
+      // Column already exists.
     }
     this.seedIfEmpty();
     this.syncSeedCatalog();
@@ -273,6 +280,7 @@ export class MangoEvent extends DurableObject<Env> {
         if (!isAdmin) return err('Unauthorized', 'unauthorized', 401);
         if (path === '/api/admin/state' && method === 'GET') return json(this.adminState());
         if (path === '/api/admin/event' && method === 'POST') return this.handleEventUpdate(request);
+        if (path === '/api/admin/reset' && method === 'POST') return this.handleReset();
         if (path === '/api/admin/mango' && method === 'POST') return this.handleMangoCreate(request);
         if (path === '/api/admin/reorder' && method === 'POST') return this.handleReorder(request);
         const mangoMatch = path.match(/^\/api\/admin\/mango\/([A-Za-z0-9-]+)(\/delete)?$/);
@@ -309,9 +317,16 @@ export class MangoEvent extends DurableObject<Env> {
       resultsVisible: !!row.results_visible,
       message: row.message,
       revision: row.revision,
+      epoch: row.epoch,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
+  }
+
+  /** The event's "fresh start" timestamp: rows written before it are hidden
+      (never deleted) from ratings, submissions, results, and stats. */
+  private getEpoch(): number {
+    return this.sql.exec<{ epoch: number }>('SELECT epoch FROM event WHERE id = ?', EVENT_ID).one().epoch;
   }
 
   private rowToMango(row: MangoRow): Mango {
@@ -345,8 +360,8 @@ export class MangoEvent extends DurableObject<Env> {
     const out: Record<string, RatingEntry> = {};
     for (const r of this.sql
       .exec<{ mango_id: string; score: number; client_rev: number; updated_at: number }>(
-        'SELECT mango_id, score, client_rev, updated_at FROM ratings WHERE client_id = ?',
-        clientId,
+        'SELECT mango_id, score, client_rev, updated_at FROM ratings WHERE client_id = ? AND score >= 1 AND updated_at >= ?',
+        clientId, this.getEpoch(),
       )
       .toArray()) {
       out[r.mango_id] = {
@@ -363,8 +378,8 @@ export class MangoEvent extends DurableObject<Env> {
     const rows = this.sql
       .exec<{ id: string; display_name: string; created_at: number; revision: number; status: string }>(
         `SELECT id, display_name, created_at, revision, status FROM submissions
-         WHERE client_id = ? AND status = 'active' ORDER BY created_at DESC LIMIT 1`,
-        clientId,
+         WHERE client_id = ? AND status = 'active' AND created_at >= ? ORDER BY created_at DESC LIMIT 1`,
+        clientId, this.getEpoch(),
       )
       .toArray();
     if (!rows.length) return null;
@@ -392,7 +407,9 @@ export class MangoEvent extends DurableObject<Env> {
     const scoreRows = this.sql
       .exec<{ mango_id: string; score: number }>(
         `SELECT ss.mango_id, ss.score FROM submitted_scores ss
-         JOIN submissions s ON s.id = ss.submission_id WHERE s.status = 'active'`,
+         JOIN submissions s ON s.id = ss.submission_id
+         WHERE s.status = 'active' AND s.created_at >= ?`,
+        this.getEpoch(),
       )
       .toArray();
     const byMango = new Map<string, number[]>();
@@ -445,16 +462,23 @@ export class MangoEvent extends DurableObject<Env> {
   private submittedClientIds(): Set<string> {
     return new Set(
       this.sql
-        .exec<{ client_id: string }>(`SELECT DISTINCT client_id FROM submissions WHERE status = 'active'`)
+        .exec<{ client_id: string }>(
+          `SELECT DISTINCT client_id FROM submissions WHERE status = 'active' AND created_at >= ?`,
+          this.getEpoch(),
+        )
         .toArray()
         .map((r) => r.client_id),
     );
   }
 
   private adminMangoes(): MangoAdminInfo[] {
+    const epoch = this.getEpoch();
     const drafts = new Map<string, number>();
     for (const r of this.sql
-      .exec<{ mango_id: string; n: number }>('SELECT mango_id, COUNT(*) AS n FROM ratings GROUP BY mango_id')
+      .exec<{ mango_id: string; n: number }>(
+        'SELECT mango_id, COUNT(*) AS n FROM ratings WHERE score >= 1 AND updated_at >= ? GROUP BY mango_id',
+        epoch,
+      )
       .toArray()) {
       drafts.set(r.mango_id, r.n);
     }
@@ -462,8 +486,10 @@ export class MangoEvent extends DurableObject<Env> {
     for (const r of this.sql
       .exec<{ mango_id: string; n: number }>(
         `SELECT ss.mango_id, COUNT(*) AS n FROM submitted_scores ss
-         JOIN submissions s ON s.id = ss.submission_id WHERE s.status = 'active'
+         JOIN submissions s ON s.id = ss.submission_id
+         WHERE s.status = 'active' AND s.created_at >= ?
          GROUP BY ss.mango_id`,
+        epoch,
       )
       .toArray()) {
       submitted.set(r.mango_id, r.n);
@@ -476,13 +502,16 @@ export class MangoEvent extends DurableObject<Env> {
   }
 
   private adminStats(): AdminStats {
-    const one = (q: string): number => this.sql.exec<{ n: number }>(q).one().n;
+    const epoch = this.getEpoch();
+    const one = (q: string): number => this.sql.exec<{ n: number }>(q, epoch).one().n;
     return {
       connected: this.ctx.getWebSockets().length,
-      participants: one('SELECT COUNT(*) AS n FROM participants'),
-      draftParticipants: one('SELECT COUNT(DISTINCT client_id) AS n FROM ratings'),
-      activeSubmissions: one(`SELECT COUNT(*) AS n FROM submissions WHERE status = 'active'`),
-      totalSubmissions: one('SELECT COUNT(*) AS n FROM submissions'),
+      participants: one('SELECT COUNT(*) AS n FROM participants WHERE last_seen >= ?'),
+      draftParticipants: one(
+        'SELECT COUNT(DISTINCT client_id) AS n FROM ratings WHERE score >= 1 AND updated_at >= ?',
+      ),
+      activeSubmissions: one(`SELECT COUNT(*) AS n FROM submissions WHERE status = 'active' AND created_at >= ?`),
+      totalSubmissions: one('SELECT COUNT(*) AS n FROM submissions WHERE created_at >= ?'),
     };
   }
 
@@ -491,8 +520,8 @@ export class MangoEvent extends DurableObject<Env> {
       .exec<{ id: string; display_name: string; created_at: number; status: string; n: number }>(
         `SELECT s.id, s.display_name, s.created_at, s.status,
                 (SELECT COUNT(*) FROM submitted_scores ss WHERE ss.submission_id = s.id) AS n
-         FROM submissions s ORDER BY s.created_at DESC LIMIT ?`,
-        limit,
+         FROM submissions s WHERE s.created_at >= ? ORDER BY s.created_at DESC LIMIT ?`,
+        this.getEpoch(), limit,
       )
       .toArray()
       .map((r) => ({
@@ -542,7 +571,10 @@ export class MangoEvent extends DurableObject<Env> {
   private async handleRate(request: Request): Promise<Response> {
     const body = (await request.json()) as Partial<import('../../shared/types').RateRequest>;
     if (!isValidClientId(body.clientId)) return err('Invalid clientId', 'invalid', 400);
-    if (!isValidScore(body.score)) return err('Score must be an integer 1-10', 'invalid', 400);
+    // Score 0 is a tombstone: "clear my rating". Stored (not deleted) so the
+    // clientRev guard keeps working — a delayed older write can't resurrect it.
+    const clearing = body.score === 0;
+    if (!clearing && !isValidScore(body.score)) return err('Score must be an integer 1-10', 'invalid', 400);
     if (typeof body.clientRev !== 'number' || !Number.isInteger(body.clientRev) || body.clientRev < 0) {
       return err('Invalid clientRev', 'invalid', 400);
     }
@@ -753,6 +785,23 @@ export class MangoEvent extends DurableObject<Env> {
     return json({ ok: true, event: this.getEvent() });
   }
 
+  /** "Fresh start": everything written before now (drafts, submissions,
+      results, stats) becomes invisible, but no rows are deleted — the old
+      data stays in the DB under the previous epoch. Mangoes are untouched. */
+  private handleReset(): Response {
+    const now = Date.now();
+    this.sql.exec(
+      'UPDATE event SET epoch = ?, revision = revision + 1, updated_at = ? WHERE id = ?',
+      now, now, EVENT_ID,
+    );
+    this.audit('event.reset', `Fresh start — votes before ${new Date(now).toISOString()} hidden`);
+    // A patch doesn't carry ratings/submissions, so push a full per-client
+    // resync: every connected guest's board wipes clean immediately.
+    this.broadcastFullResync();
+    this.scheduleStatsBroadcast();
+    return json({ ok: true, event: this.getEvent() });
+  }
+
   private async handleMangoCreate(request: Request): Promise<Response> {
     const body = (await request.json()) as Record<string, unknown>;
     const name = cleanText(body.name, 60);
@@ -874,9 +923,11 @@ export class MangoEvent extends DurableObject<Env> {
     const event = this.getEvent();
     const mangoes = this.listMangoes(false);
     const results = this.computeResults();
+    // Exports cover the current era only — pre-reset rows stay in the DB.
     const submissions = this.sql
       .exec<{ id: string; client_id: string; display_name: string; created_at: number; status: string }>(
-        'SELECT id, client_id, display_name, created_at, status FROM submissions ORDER BY created_at',
+        'SELECT id, client_id, display_name, created_at, status FROM submissions WHERE created_at >= ? ORDER BY created_at',
+        this.getEpoch(),
       )
       .toArray();
     const scores = this.sql
@@ -1043,6 +1094,24 @@ export class MangoEvent extends DurableObject<Env> {
         ws.send(msg);
       } catch {
         /* ignore */
+      }
+    }
+  }
+
+  /** Fresh `hello` (full state) per socket — used when per-client state
+      (ratings/submissions) changed server-side, which a patch can't convey. */
+  private broadcastFullResync(): void {
+    for (const ws of this.ctx.getWebSockets()) {
+      const att = ws.deserializeAttachment() as WsAttachment | null;
+      try {
+        ws.send(
+          JSON.stringify({
+            type: 'hello',
+            state: att?.admin ? this.adminState() : this.guestState(att?.clientId ?? null),
+          }),
+        );
+      } catch {
+        /* socket closing */
       }
     }
   }

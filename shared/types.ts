@@ -13,6 +13,8 @@ export interface EventConfig {
   resultsVisible: boolean;
   message: string;
   revision: number;
+  /** "Fresh start" timestamp — data written before this is hidden, not deleted. */
+  epoch: number;
   createdAt: number;
   updatedAt: number;
 }
@@ -157,6 +159,7 @@ export type ServerMessage = HelloMessage | PatchMessage | StatsMessage;
 export interface RateRequest {
   clientId: string;
   mangoId: string;
+  /** 1-10, or 0 to clear a previously set rating (rev-guarded tombstone). */
   score: number;
   clientRev: number;
 }

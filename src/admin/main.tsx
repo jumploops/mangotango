@@ -267,6 +267,30 @@ function EventControls() {
           </button>
         ) : null}
       </div>
+      <div class="resetRow">
+        <button
+          class="mini danger"
+          onClick={() => {
+            if (
+              !confirm(
+                'Fresh start? All votes and submissions so far will be hidden from results and stats. Mangoes are untouched, and the old data stays in the database.',
+              )
+            ) {
+              return;
+            }
+            api('/api/admin/reset', {}).then(
+              () => say('Fresh start — the board is clean'),
+              (e: unknown) => say(e instanceof Error ? e.message : 'Failed'),
+            );
+          }}
+        >
+          🧹 Fresh start
+        </button>
+        <span class="dim resetHint">
+          Hides all votes so far (e.g. test data) without deleting anything. Mangoes stay.
+          {ev.epoch ? ` Last fresh start: ${new Date(ev.epoch).toLocaleString()}.` : ''}
+        </span>
+      </div>
     </section>
   );
 }
