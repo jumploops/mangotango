@@ -106,14 +106,51 @@ function Banners() {
 function RatingSlider({ mango, disabled }: { mango: Mango; disabled: boolean }) {
   const current = ratings.value[mango.id]?.score ?? null;
   const [preview, setPreview] = useState<number | null>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const score = preview ?? current;
   const s = look(score ?? 5);
 
-  const onInput = (e: Event) => {
-    const v = Number((e.currentTarget as HTMLInputElement).value);
+  const apply = (v: number) => {
     if (v !== score) tick();
     setPreview(v);
     setRating(mango.id, v);
+  };
+
+  // Touch/mouse input is handled on the wrapper, not the native input:
+  // iOS Safari's range input only reacts to drags that start exactly on the
+  // thumb and ignores track taps entirely. Pointer events give us
+  // tap-anywhere + drag on every device; the native input stays for
+  // keyboard and assistive tech.
+  const valueFromX = (clientX: number): number => {
+    const el = wrapRef.current;
+    if (!el) return score ?? 5;
+    const rect = el.getBoundingClientRect();
+    const inset = 19; // half the thumb, so 1 and 10 are comfortably reachable
+    const ratio = (clientX - rect.left - inset) / Math.max(rect.width - inset * 2, 1);
+    return Math.min(10, Math.max(1, Math.round(1 + ratio * 9)));
+  };
+
+  const onPointerDown = (e: PointerEvent) => {
+    if (disabled) return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    apply(valueFromX(e.clientX));
+  };
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (disabled) return;
+    if (!(e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) return;
+    apply(valueFromX(e.clientX));
+  };
+
+  const onPointerEnd = (e: PointerEvent) => {
+    const el = e.currentTarget as HTMLElement;
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    flushNow();
+  };
+
+  const onInput = (e: Event) => {
+    apply(Number((e.currentTarget as HTMLInputElement).value));
   };
 
   return (
@@ -132,19 +169,27 @@ function RatingSlider({ mango, disabled }: { mango: Mango; disabled: boolean }) 
           </>
         )}
       </div>
-      <input
-        type="range"
-        min={1}
-        max={10}
-        step={1}
-        value={score ?? 5}
-        disabled={disabled}
-        aria-label={`Rating for ${mango.name}, 1 is worst and 10 is best`}
-        aria-valuetext={score === null ? 'not rated yet' : `${score} out of 10 — ${s.label}`}
-        onInput={onInput}
-        onPointerUp={() => flushNow()}
-        onKeyUp={() => flushNow()}
-      />
+      <div
+        class="trackWrap"
+        ref={wrapRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+      >
+        <input
+          type="range"
+          min={1}
+          max={10}
+          step={1}
+          value={score ?? 5}
+          disabled={disabled}
+          aria-label={`Rating for ${mango.name}, 1 is worst and 10 is best`}
+          aria-valuetext={score === null ? 'not rated yet' : `${score} out of 10 — ${s.label}`}
+          onInput={onInput}
+          onKeyUp={() => flushNow()}
+        />
+      </div>
       <div class="scale" aria-hidden="true">
         <span>1 · worst</span>
         <span>10 · best</span>

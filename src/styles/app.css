@@ -354,13 +354,25 @@
   from { transform: scale(1.5); }
 }
 
+/* The wrapper owns all pointer input (tap-anywhere + drag); the native
+   input underneath keeps keyboard/AT support and draws the visuals. */
+.trackWrap {
+  margin-top: 4px;
+  touch-action: none; /* the drag is ours — don't let the page scroll-steal it */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
 .rate input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
   height: 48px; /* big touch target */
   background: transparent;
-  margin: 4px 0 0;
+  margin: 0;
+  display: block;
+  pointer-events: none; /* wrapper handles taps/drags on every device */
 }
 
 .rate input[type='range']:disabled { opacity: 0.45; }
@@ -386,7 +398,7 @@
   transition: transform 0.2s var(--spring-big);
 }
 
-.rate input[type='range']:active::-webkit-slider-thumb {
+.trackWrap:active input[type='range']::-webkit-slider-thumb {
   transform: scale(1.25);
 }
 
