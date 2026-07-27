@@ -134,6 +134,31 @@
 .banner.off { border-color: oklch(0.55 0.2 25 / 0.6); color: oklch(0.48 0.18 28); }
 .banner.note { border-color: oklch(0.53 0.14 145 / 0.45); }
 
+/* ---------------------------------------------------------- report link */
+
+.reportLink {
+  display: block;
+  margin: 8px 0;
+  padding: 13px 16px;
+  border-radius: var(--r-md);
+  font-size: 0.92rem;
+  color: var(--ink-dim);
+  text-decoration: none;
+  background: var(--card);
+  border: 1px solid oklch(0.75 0.14 85 / 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s var(--spring-big), box-shadow 0.3s;
+}
+
+.reportLink b { color: var(--mango-deep); }
+
+.reportLink:hover,
+.reportLink:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
 /* ----------------------------------------------------------------- cards */
 
 .list {

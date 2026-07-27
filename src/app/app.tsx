@@ -564,6 +564,9 @@ export function App() {
     <div class={`shell ${celebrating.value ? 'party' : ''}`}>
       <Header />
       <Banners />
+      <a class="reportLink" href="/results">
+        🏆 The 2026 results are in — <b>see the full report →</b>
+      </a>
       <Results />
       <MangoList />
       <SubmitBar />
