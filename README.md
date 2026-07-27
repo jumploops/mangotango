@@ -5,6 +5,16 @@ Guests rate mangoes 1–10 with no account; hosts run the show from a
 password-protected console. One Cloudflare Worker + one SQLite-backed
 Durable Object coordinate everything live.
 
+## Screenshots
+
+| Rate every mango | The whole-mango 10 | Read more |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/home.png" width="240" alt="Guest home: mango list with score badges and progress ring"> | <img src="docs/screenshots/rating.png" width="240" alt="Open card with the tri-color score-10 MANGO NIRVANA rating"> | <img src="docs/screenshots/details.png" width="240" alt="Markdown details popup for a mango"> |
+
+| Lock it in | Live standings | Host console |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/submit.png" width="240" alt="Submit sheet with name input and ranked summary"> | <img src="docs/screenshots/standings.png" width="240" alt="Live leaderboard unlocked after submitting"> | <img src="docs/screenshots/admin.png" width="240" alt="Host console with stats and event controls"> |
+
 ## Stack
 
 - **Backend** — Cloudflare Worker routing `/api/*` to a single `MangoEvent`
@@ -63,8 +73,11 @@ Optionally set a separate cookie-signing secret:
   live stats, results, CSV/JSON export, audit log).
 - `shared/types.ts` — the protocol, shared by both sides.
 
-The first boot seeds the event with six classic varieties — rename, hide,
-or delete them from the console before the party.
+The mango catalog lives in `shared/mangoes.json` (name, card summary, and
+a long markdown description for the "read more" popup). First boot seeds
+the event from it; to push catalog edits to an existing event, bump
+`SEED_VERSION` in `src/worker/event-do.ts` — or just edit live from the
+console.
 
 ## Notes
 
