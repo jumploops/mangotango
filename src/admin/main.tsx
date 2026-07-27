@@ -497,12 +497,19 @@ function ResultsPanel() {
         </div>
       )}
       <div class="exports">
-        <a class="mini btnLike" href="/api/admin/export?format=csv" download>
+        <a class="mini btnLike" href={`/api/admin/export?format=csv${view === 'all' ? '&scope=all' : ''}`} download>
           ⬇ Export CSV
         </a>
-        <a class="mini btnLike" href="/api/admin/export?format=json" download="mango-tango-export.json">
+        <a
+          class="mini btnLike"
+          href={`/api/admin/export?format=json${view === 'all' ? '&scope=all' : ''}`}
+          download={view === 'all' ? 'mango-tango-all-votes.json' : 'mango-tango-export.json'}
+        >
           ⬇ Export JSON
         </a>
+        <span class="dim exportHint">
+          {view === 'all' ? 'exports every vote, drafts included' : 'exports submitted ballots'}
+        </span>
       </div>
     </section>
   );

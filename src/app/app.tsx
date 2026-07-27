@@ -384,11 +384,18 @@ function SubmitSheet() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // MUST read the signal during render, not just inside the effect: signals
+  // only re-render components that read them while rendering. Reading it only
+  // in the effect meant tapping Submit set the signal but never re-rendered
+  // this component, so showModal() didn't run until something else (a ratings
+  // flush, a visibilitychange resync) happened to re-render it.
+  const open = sheetOpen.value;
+
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (sheetOpen.value && !d.open) d.showModal();
-    if (!sheetOpen.value && d.open) d.close();
+    if (open && !d.open) d.showModal();
+    if (!open && d.open) d.close();
   });
 
   const list = mangoes.value

@@ -312,7 +312,9 @@ textarea {
   border-radius: 2px 2px 0 0;
 }
 
-.exports { display: flex; gap: 8px; margin-top: 14px; }
+.exports { display: flex; gap: 8px; margin-top: 14px; align-items: center; flex-wrap: wrap; }
+
+.exportHint { font-size: 0.78rem; }
 
 /* activity */
 .twoCol {

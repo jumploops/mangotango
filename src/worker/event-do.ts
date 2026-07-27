@@ -290,7 +290,10 @@ export class MangoEvent extends DurableObject<Env> {
             : this.handleMangoUpdate(mangoMatch[1], request);
         }
         if (path === '/api/admin/export' && method === 'GET') {
-          return this.handleExport(url.searchParams.get('format') ?? 'json');
+          return this.handleExport(
+            url.searchParams.get('format') ?? 'json',
+            url.searchParams.get('scope') === 'all' ? 'all' : 'ballots',
+          );
         }
       }
 
@@ -939,7 +942,8 @@ export class MangoEvent extends DurableObject<Env> {
     return json({ ok: true });
   }
 
-  private handleExport(format: string): Response {
+  private handleExport(format: string, scope: 'ballots' | 'all'): Response {
+    if (scope === 'all') return this.handleExportAllVotes(format);
     const event = this.getEvent();
     const mangoes = this.listMangoes(false);
     const results = this.computeResults();
@@ -1003,6 +1007,91 @@ export class MangoEvent extends DurableObject<Env> {
         createdAt: sub.created_at,
         status: sub.status,
         scores: Object.fromEntries(scoresBySub.get(sub.id) ?? []),
+      })),
+      exportedAt: Date.now(),
+    });
+  }
+
+  /** Export every current vote (drafts included): one row per taster, sourced
+      from the live ratings table. Names come from the taster's active
+      submission when they have one; drafts-only tasters get a short id. */
+  private handleExportAllVotes(format: string): Response {
+    const epoch = this.getEpoch();
+    const mangoes = this.listMangoes(false);
+
+    const voteRows = this.sql
+      .exec<{ client_id: string; mango_id: string; score: number; updated_at: number }>(
+        'SELECT client_id, mango_id, score, updated_at FROM ratings WHERE score >= 1 AND updated_at >= ? ORDER BY client_id',
+        epoch,
+      )
+      .toArray();
+    const byClient = new Map<string, { scores: Map<string, number>; updatedAt: number }>();
+    for (const r of voteRows) {
+      let c = byClient.get(r.client_id);
+      if (!c) byClient.set(r.client_id, (c = { scores: new Map(), updatedAt: 0 }));
+      c.scores.set(r.mango_id, r.score);
+      c.updatedAt = Math.max(c.updatedAt, r.updated_at);
+    }
+    // Latest active submission name per client (created_at ascending → last wins).
+    const nameByClient = new Map<string, string>();
+    for (const s of this.sql
+      .exec<{ client_id: string; display_name: string }>(
+        `SELECT client_id, display_name FROM submissions
+         WHERE status = 'active' AND created_at >= ? ORDER BY created_at`,
+        epoch,
+      )
+      .toArray()) {
+      nameByClient.set(s.client_id, s.display_name);
+    }
+
+    const tasters = [...byClient.entries()].map(([clientId, c]) => ({
+      clientId,
+      displayName: nameByClient.get(clientId) ?? null,
+      submitted: nameByClient.has(clientId),
+      updatedAt: c.updatedAt,
+      scores: c.scores,
+    }));
+
+    if (format === 'csv') {
+      const esc = (v: string | number | null) => {
+        const s = v === null ? '' : String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const header = ['taster', 'name', 'status', 'last_updated', ...mangoes.map((m) => m.name)];
+      const lines = [header.map(esc).join(',')];
+      for (const t of tasters) {
+        lines.push(
+          [
+            t.clientId.slice(0, 8),
+            t.displayName,
+            t.submitted ? 'submitted' : 'draft',
+            new Date(t.updatedAt).toISOString(),
+            ...mangoes.map((m) => t.scores.get(m.id) ?? null),
+          ]
+            .map(esc)
+            .join(','),
+        );
+      }
+      this.audit('export', 'CSV (all votes)');
+      return new Response(lines.join('\n'), {
+        headers: {
+          'content-type': 'text/csv; charset=utf-8',
+          'content-disposition': 'attachment; filename="mango-tango-all-votes.csv"',
+        },
+      });
+    }
+
+    this.audit('export', 'JSON (all votes)');
+    return json({
+      event: this.getEvent(),
+      mangoes,
+      results: this.computeAllResults(),
+      votes: tasters.map((t) => ({
+        clientId: t.clientId,
+        displayName: t.displayName,
+        submitted: t.submitted,
+        updatedAt: t.updatedAt,
+        scores: Object.fromEntries(t.scores),
       })),
       exportedAt: Date.now(),
     });
