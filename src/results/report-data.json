@@ -627,7 +627,7 @@
  ],
  "tasters": [
   {
-   "label": "Taster 5578",
+   "label": "Bryce",
    "status": "submitted",
    "mean": 6.83,
    "sd": 2.88,
@@ -645,7 +645,7 @@
    "ones": 0
   },
   {
-   "label": "Taster 7da5",
+   "label": "Manny",
    "status": "submitted",
    "mean": 6.52,
    "sd": 1.74,
@@ -654,7 +654,7 @@
    "ones": 0
   },
   {
-   "label": "Taster bd31",
+   "label": "Mangoagogo",
    "status": "submitted",
    "mean": 6.5,
    "sd": 1.15,
@@ -672,7 +672,7 @@
    "ones": 2
   },
   {
-   "label": "Taster 994f",
+   "label": "Danny",
    "status": "submitted",
    "mean": 6.17,
    "sd": 1.62,
@@ -681,7 +681,7 @@
    "ones": 0
   },
   {
-   "label": "Taster e9e0",
+   "label": "Sarah",
    "status": "submitted",
    "mean": 6.04,
    "sd": 2.32,
@@ -690,7 +690,7 @@
    "ones": 1
   },
   {
-   "label": "Taster 58c2",
+   "label": "Vanessa",
    "status": "submitted",
    "mean": 5.7,
    "sd": 1.83,
@@ -726,7 +726,7 @@
    "ones": 0
   },
   {
-   "label": "Taster 1a55",
+   "label": "Evan",
    "status": "submitted",
    "mean": 5.54,
    "sd": 2.31,
@@ -744,7 +744,7 @@
    "ones": 2
   },
   {
-   "label": "Taster 538f",
+   "label": "Chelsie",
    "status": "submitted",
    "mean": 5.29,
    "sd": 2.61,
@@ -753,7 +753,7 @@
    "ones": 2
   },
   {
-   "label": "Taster 7dbc",
+   "label": "Meggie",
    "status": "submitted",
    "mean": 5.12,
    "sd": 2.51,
@@ -771,7 +771,7 @@
    "ones": 1
   },
   {
-   "label": "Taster f714",
+   "label": "Joe",
    "status": "submitted",
    "mean": 4.96,
    "sd": 2.15,
@@ -800,15 +800,15 @@
  ],
  "twins": [
   {
-   "a": "Taster 538f",
-   "b": "Taster 994f",
+   "a": "Chelsie",
+   "b": "Danny",
    "r": 0.75
   }
  ],
  "opposites": [
   {
    "a": "Taster 159d",
-   "b": "Taster e9e0",
+   "b": "Sarah",
    "r": -0.17
   }
  ],

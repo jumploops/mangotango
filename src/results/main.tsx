@@ -482,7 +482,7 @@ function Superlatives() {
     ['Palate twins', `${twins.a} & ${twins.b}`, `r = ${twins.r} — if one likes it, the other already does`],
     ['Palate opposites', `${opp.a} & ${opp.b}`, `r = ${opp.r} — never let them split a mango`],
     ['The crowd oracle', oracle.label, `r = ${oracle.r} with the room's average — the median mango eater`],
-    ['Busiest host', 'The host', 'rated exactly two mangoes — too busy running the show to eat'],
+    ['Busiest host', 'Adam', 'rated exactly two mangoes — too busy running the show to eat'],
     ['Never made the table', (REPORT.meta.neverRated as string[]).join(' & '), 'on the list, zero votes — they never met the knife'],
   ];
   return (

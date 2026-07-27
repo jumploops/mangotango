@@ -34,8 +34,10 @@ submitted = [t for t in tasters if t["status"] == "submitted"]
 
 
 def label(t):
-    # Uniformly anonymous: most tasters never gave a name, so nobody's
-    # first name goes on the public results page.
+    # First names only on the public page (no surnames); unnamed tasters
+    # get a short anonymous id.
+    if t["name"]:
+        return t["name"].split()[0]
     return f"Taster {t['id'][:4]}"
 
 
