@@ -18,6 +18,7 @@ export default defineConfig({
           input: {
             index: resolve(import.meta.dirname, 'index.html'),
             admin: resolve(import.meta.dirname, 'admin.html'),
+            results: resolve(import.meta.dirname, 'results.html'),
           },
         },
       },

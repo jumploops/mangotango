@@ -1,0 +1,864 @@
+{
+ "meta": {
+  "title": "Mango Tango 2026",
+  "date": "July 26, 2026",
+  "tasters": 21,
+  "submitted": 11,
+  "mangoesTasted": 24,
+  "votes": 452,
+  "neverRated": [
+   "Peach Cobbler",
+   "Guava"
+  ]
+ },
+ "mangoes": [
+  {
+   "name": "Lemon Zest",
+   "n": 19,
+   "mean": 7.74,
+   "med": 8,
+   "sd": 1.25,
+   "min": 6,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    4,
+    6,
+    3,
+    2
+   ],
+   "subMean": 8,
+   "subN": 10,
+   "rank": 1,
+   "subRank": 1
+  },
+  {
+   "name": "Sweet Tart",
+   "n": 19,
+   "mean": 7.21,
+   "med": 7,
+   "sd": 1.73,
+   "min": 4,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    0,
+    2,
+    1,
+    4,
+    3,
+    3,
+    5,
+    1
+   ],
+   "subMean": 6.9,
+   "subN": 10,
+   "rank": 2,
+   "subRank": 7
+  },
+  {
+   "name": "Kathy",
+   "n": 19,
+   "mean": 7.05,
+   "med": 7,
+   "sd": 1.67,
+   "min": 3,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    1,
+    0,
+    3,
+    1,
+    6,
+    6,
+    0,
+    2
+   ],
+   "subMean": 7.5,
+   "subN": 10,
+   "rank": 3,
+   "subRank": 2
+  },
+  {
+   "name": "Orange Sherbet",
+   "n": 18,
+   "mean": 6.89,
+   "med": 7.0,
+   "sd": 1.29,
+   "min": 4,
+   "max": 9,
+   "dist": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    5,
+    5,
+    4,
+    2,
+    0
+   ],
+   "subMean": 6.56,
+   "subN": 9,
+   "rank": 4,
+   "subRank": 8
+  },
+  {
+   "name": "Pickering",
+   "n": 19,
+   "mean": 6.89,
+   "med": 7,
+   "sd": 1.25,
+   "min": 5,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    0,
+    0,
+    3,
+    4,
+    6,
+    5,
+    0,
+    1
+   ],
+   "subMean": 7.1,
+   "subN": 10,
+   "rank": 5,
+   "subRank": 4
+  },
+  {
+   "name": "White Piri",
+   "n": 19,
+   "mean": 6.74,
+   "med": 7,
+   "sd": 1.94,
+   "min": 2,
+   "max": 10,
+   "dist": [
+    0,
+    1,
+    1,
+    0,
+    1,
+    5,
+    5,
+    2,
+    3,
+    1
+   ],
+   "subMean": 7,
+   "subN": 10,
+   "rank": 6,
+   "subRank": 5
+  },
+  {
+   "name": "Mekony",
+   "n": 19,
+   "mean": 6.58,
+   "med": 7,
+   "sd": 2.06,
+   "min": 2,
+   "max": 10,
+   "dist": [
+    0,
+    1,
+    2,
+    0,
+    1,
+    3,
+    6,
+    3,
+    2,
+    1
+   ],
+   "subMean": 7.4,
+   "subN": 10,
+   "rank": 7,
+   "subRank": 3
+  },
+  {
+   "name": "Lemon Meringue",
+   "n": 19,
+   "mean": 6.32,
+   "med": 6,
+   "sd": 1.78,
+   "min": 4,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    0,
+    5,
+    0,
+    7,
+    1,
+    4,
+    1,
+    1
+   ],
+   "subMean": 6.2,
+   "subN": 10,
+   "rank": 8,
+   "subRank": 10
+  },
+  {
+   "name": "Sia Siam",
+   "n": 19,
+   "mean": 6.16,
+   "med": 6,
+   "sd": 2.37,
+   "min": 1,
+   "max": 9,
+   "dist": [
+    1,
+    1,
+    1,
+    2,
+    0,
+    5,
+    4,
+    0,
+    5,
+    0
+   ],
+   "subMean": 6.2,
+   "subN": 10,
+   "rank": 9,
+   "subRank": 11
+  },
+  {
+   "name": "Sindhiri",
+   "n": 19,
+   "mean": 6.05,
+   "med": 6,
+   "sd": 2.63,
+   "min": 1,
+   "max": 10,
+   "dist": [
+    1,
+    1,
+    2,
+    2,
+    1,
+    3,
+    4,
+    0,
+    3,
+    2
+   ],
+   "subMean": 5.33,
+   "subN": 9,
+   "rank": 10,
+   "subRank": 19
+  },
+  {
+   "name": "Bailey's Marvel",
+   "n": 18,
+   "mean": 6,
+   "med": 6.0,
+   "sd": 1.73,
+   "min": 2,
+   "max": 9,
+   "dist": [
+    0,
+    1,
+    0,
+    3,
+    2,
+    5,
+    3,
+    3,
+    1,
+    0
+   ],
+   "subMean": 6.22,
+   "subN": 9,
+   "rank": 11,
+   "subRank": 9
+  },
+  {
+   "name": "Ugly Betty",
+   "n": 19,
+   "mean": 5.95,
+   "med": 6,
+   "sd": 1.93,
+   "min": 1,
+   "max": 9,
+   "dist": [
+    1,
+    0,
+    0,
+    3,
+    4,
+    3,
+    4,
+    2,
+    2,
+    0
+   ],
+   "subMean": 6.1,
+   "subN": 10,
+   "rank": 12,
+   "subRank": 12
+  },
+  {
+   "name": "champagne",
+   "n": 20,
+   "mean": 5.7,
+   "med": 6.0,
+   "sd": 1.79,
+   "min": 2,
+   "max": 10,
+   "dist": [
+    0,
+    2,
+    0,
+    1,
+    6,
+    5,
+    4,
+    1,
+    0,
+    1
+   ],
+   "subMean": 5.64,
+   "subN": 11,
+   "rank": 13,
+   "subRank": 16
+  },
+  {
+   "name": "Tommy Atkins",
+   "n": 19,
+   "mean": 5.68,
+   "med": 6,
+   "sd": 1.97,
+   "min": 3,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    4,
+    1,
+    4,
+    4,
+    3,
+    1,
+    1,
+    1
+   ],
+   "subMean": 6,
+   "subN": 10,
+   "rank": 14,
+   "subRank": 14
+  },
+  {
+   "name": "Kasar",
+   "n": 19,
+   "mean": 5.58,
+   "med": 5,
+   "sd": 2.37,
+   "min": 2,
+   "max": 9,
+   "dist": [
+    0,
+    2,
+    3,
+    1,
+    5,
+    1,
+    2,
+    1,
+    4,
+    0
+   ],
+   "subMean": 7,
+   "subN": 10,
+   "rank": 15,
+   "subRank": 6
+  },
+  {
+   "name": "manila",
+   "n": 18,
+   "mean": 5.56,
+   "med": 6.0,
+   "sd": 1.57,
+   "min": 3,
+   "max": 8,
+   "dist": [
+    0,
+    0,
+    2,
+    4,
+    2,
+    4,
+    4,
+    2,
+    0,
+    0
+   ],
+   "subMean": 5.6,
+   "subN": 10,
+   "rank": 16,
+   "subRank": 17
+  },
+  {
+   "name": "Kent",
+   "n": 18,
+   "mean": 5.44,
+   "med": 5.0,
+   "sd": 1.46,
+   "min": 3,
+   "max": 8,
+   "dist": [
+    0,
+    0,
+    2,
+    2,
+    7,
+    2,
+    3,
+    2,
+    0,
+    0
+   ],
+   "subMean": 6.09,
+   "subN": 11,
+   "rank": 17,
+   "subRank": 13
+  },
+  {
+   "name": "The Spirit of '76",
+   "n": 19,
+   "mean": 5.37,
+   "med": 5,
+   "sd": 1.84,
+   "min": 3,
+   "max": 9,
+   "dist": [
+    0,
+    0,
+    4,
+    3,
+    3,
+    4,
+    3,
+    0,
+    2,
+    0
+   ],
+   "subMean": 6,
+   "subN": 10,
+   "rank": 18,
+   "subRank": 15
+  },
+  {
+   "name": "Red",
+   "n": 19,
+   "mean": 5.21,
+   "med": 5,
+   "sd": 1.7,
+   "min": 3,
+   "max": 10,
+   "dist": [
+    0,
+    0,
+    3,
+    4,
+    5,
+    3,
+    3,
+    0,
+    0,
+    1
+   ],
+   "subMean": 5.5,
+   "subN": 10,
+   "rank": 19,
+   "subRank": 18
+  },
+  {
+   "name": "Dwarf Hawaiian",
+   "n": 19,
+   "mean": 4.84,
+   "med": 5,
+   "sd": 1.63,
+   "min": 1,
+   "max": 7,
+   "dist": [
+    1,
+    2,
+    1,
+    1,
+    5,
+    8,
+    1,
+    0,
+    0,
+    0
+   ],
+   "subMean": 4.9,
+   "subN": 10,
+   "rank": 20,
+   "subRank": 20
+  },
+  {
+   "name": "ST Maui",
+   "n": 19,
+   "mean": 3.89,
+   "med": 4,
+   "sd": 2.4,
+   "min": 1,
+   "max": 9,
+   "dist": [
+    5,
+    2,
+    0,
+    5,
+    3,
+    1,
+    1,
+    1,
+    1,
+    0
+   ],
+   "subMean": 3.5,
+   "subN": 10,
+   "rank": 21,
+   "subRank": 23
+  },
+  {
+   "name": "manguito verde",
+   "n": 19,
+   "mean": 3.68,
+   "med": 4,
+   "sd": 2.03,
+   "min": 1,
+   "max": 8,
+   "dist": [
+    5,
+    1,
+    1,
+    6,
+    2,
+    3,
+    0,
+    1,
+    0,
+    0
+   ],
+   "subMean": 3.6,
+   "subN": 10,
+   "rank": 22,
+   "subRank": 22
+  },
+  {
+   "name": "Haden",
+   "n": 19,
+   "mean": 3.37,
+   "med": 3,
+   "sd": 1.49,
+   "min": 1,
+   "max": 6,
+   "dist": [
+    1,
+    6,
+    5,
+    1,
+    4,
+    2,
+    0,
+    0,
+    0,
+    0
+   ],
+   "subMean": 3.9,
+   "subN": 10,
+   "rank": 23,
+   "subRank": 21
+  },
+  {
+   "name": "Tierno",
+   "n": 18,
+   "mean": 2.61,
+   "med": 2.0,
+   "sd": 1.64,
+   "min": 1,
+   "max": 6,
+   "dist": [
+    7,
+    3,
+    2,
+    3,
+    2,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "subMean": 2.44,
+   "subN": 9,
+   "rank": 24,
+   "subRank": 24
+  }
+ ],
+ "histogram": [
+  22,
+  23,
+  34,
+  50,
+  65,
+  87,
+  75,
+  47,
+  35,
+  14
+ ],
+ "tasters": [
+  {
+   "label": "Taster 5578",
+   "status": "submitted",
+   "mean": 6.83,
+   "sd": 2.88,
+   "n": 24,
+   "tens": 6,
+   "ones": 2
+  },
+  {
+   "label": "Taster 7c78",
+   "status": "draft",
+   "mean": 6.7,
+   "sd": 2.18,
+   "n": 23,
+   "tens": 4,
+   "ones": 0
+  },
+  {
+   "label": "Taster 7da5",
+   "status": "submitted",
+   "mean": 6.52,
+   "sd": 1.74,
+   "n": 21,
+   "tens": 0,
+   "ones": 0
+  },
+  {
+   "label": "Taster bd31",
+   "status": "submitted",
+   "mean": 6.5,
+   "sd": 1.15,
+   "n": 24,
+   "tens": 0,
+   "ones": 0
+  },
+  {
+   "label": "Taster ebc1",
+   "status": "draft",
+   "mean": 6.25,
+   "sd": 2.42,
+   "n": 24,
+   "tens": 0,
+   "ones": 2
+  },
+  {
+   "label": "Taster 994f",
+   "status": "submitted",
+   "mean": 6.17,
+   "sd": 1.62,
+   "n": 24,
+   "tens": 0,
+   "ones": 0
+  },
+  {
+   "label": "Taster e9e0",
+   "status": "submitted",
+   "mean": 6.04,
+   "sd": 2.32,
+   "n": 24,
+   "tens": 0,
+   "ones": 1
+  },
+  {
+   "label": "Taster 58c2",
+   "status": "submitted",
+   "mean": 5.7,
+   "sd": 1.83,
+   "n": 23,
+   "tens": 1,
+   "ones": 0
+  },
+  {
+   "label": "Taster 72eb",
+   "status": "draft",
+   "mean": 5.68,
+   "sd": 1.66,
+   "n": 22,
+   "tens": 0,
+   "ones": 0
+  },
+  {
+   "label": "Taster 1a6b",
+   "status": "draft",
+   "mean": 5.62,
+   "sd": 2.34,
+   "n": 24,
+   "tens": 1,
+   "ones": 2
+  },
+  {
+   "label": "Taster 3475",
+   "status": "draft",
+   "mean": 5.62,
+   "sd": 1.11,
+   "n": 24,
+   "tens": 0,
+   "ones": 0
+  },
+  {
+   "label": "Taster 1a55",
+   "status": "submitted",
+   "mean": 5.54,
+   "sd": 2.31,
+   "n": 24,
+   "tens": 1,
+   "ones": 2
+  },
+  {
+   "label": "Taster a6ca",
+   "status": "draft",
+   "mean": 5.33,
+   "sd": 2.05,
+   "n": 24,
+   "tens": 0,
+   "ones": 2
+  },
+  {
+   "label": "Taster 538f",
+   "status": "submitted",
+   "mean": 5.29,
+   "sd": 2.61,
+   "n": 24,
+   "tens": 0,
+   "ones": 2
+  },
+  {
+   "label": "Taster 7dbc",
+   "status": "submitted",
+   "mean": 5.12,
+   "sd": 2.51,
+   "n": 24,
+   "tens": 0,
+   "ones": 2
+  },
+  {
+   "label": "Taster 3eb4",
+   "status": "draft",
+   "mean": 5,
+   "sd": 2.1,
+   "n": 24,
+   "tens": 0,
+   "ones": 1
+  },
+  {
+   "label": "Taster f714",
+   "status": "submitted",
+   "mean": 4.96,
+   "sd": 2.15,
+   "n": 24,
+   "tens": 1,
+   "ones": 1
+  },
+  {
+   "label": "Taster 8e02",
+   "status": "draft",
+   "mean": 4.67,
+   "sd": 2.21,
+   "n": 24,
+   "tens": 0,
+   "ones": 3
+  },
+  {
+   "label": "Taster 159d",
+   "status": "draft",
+   "mean": 4.62,
+   "sd": 2.38,
+   "n": 24,
+   "tens": 0,
+   "ones": 2
+  }
+ ],
+ "twins": [
+  {
+   "a": "Taster 538f",
+   "b": "Taster 994f",
+   "r": 0.75
+  }
+ ],
+ "opposites": [
+  {
+   "a": "Taster 159d",
+   "b": "Taster e9e0",
+   "r": -0.17
+  }
+ ],
+ "oracle": [
+  {
+   "label": "Taster 72eb",
+   "r": 0.82
+  }
+ ],
+ "movers": [
+  {
+   "name": "Sindhiri",
+   "all": 10,
+   "sub": 19
+  },
+  {
+   "name": "Kasar",
+   "all": 15,
+   "sub": 6
+  },
+  {
+   "name": "Sweet Tart",
+   "all": 2,
+   "sub": 7
+  },
+  {
+   "name": "Orange Sherbet",
+   "all": 4,
+   "sub": 8
+  },
+  {
+   "name": "Mekony",
+   "all": 7,
+   "sub": 3
+  },
+  {
+   "name": "Kent",
+   "all": 17,
+   "sub": 13
+  },
+  {
+   "name": "champagne",
+   "all": 13,
+   "sub": 16
+  },
+  {
+   "name": "The Spirit of '76",
+   "all": 18,
+   "sub": 15
+  }
+ ],
+ "totalTens": 14
+}
