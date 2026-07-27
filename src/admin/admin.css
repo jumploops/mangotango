@@ -113,6 +113,11 @@ body {
   transform: scale(1.04);
 }
 
+.segmented.two {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 380px;
+}
+
 .toggles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));

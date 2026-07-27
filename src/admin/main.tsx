@@ -79,6 +79,7 @@ function connectLive(): void {
         event: msg.event,
         mangoes: msg.mangoes as MangoAdminInfo[],
         results: msg.results ?? cur.results,
+        allResults: msg.allResults ?? cur.allResults,
       };
     } else if (msg.type === 'stats' && cur) {
       state.value = {
@@ -87,6 +88,7 @@ function connectLive(): void {
         recentSubmissions: msg.recentSubmissions,
         mangoes: msg.mangoes,
         results: msg.results,
+        allResults: msg.allResults,
       };
     }
   };
@@ -448,16 +450,29 @@ function MangoManager() {
 }
 
 function ResultsPanel() {
-  const res = state.value!.results;
+  const s = state.value!;
+  // 'ballots' = formally submitted rankings; 'all' = every current vote in
+  // the ratings table, including drafts that were never submitted.
+  const [view, setView] = useState<'ballots' | 'all'>('ballots');
+  const res = view === 'all' ? s.allResults : s.results;
   const ranked = [...res].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
   const top = ranked.find((r) => r.rank === 1)?.average ?? 10;
   return (
     <section class="panel">
       <h2>
-        🏆 Results <small>(active ballots only)</small>
+        🏆 Results{' '}
+        <small>{view === 'all' ? '(every vote, drafts included)' : '(active ballots only)'}</small>
       </h2>
+      <div class="segmented two" role="group" aria-label="Results source">
+        <button class={view === 'ballots' ? 'on' : ''} onClick={() => setView('ballots')}>
+          🗳 Submitted ballots
+        </button>
+        <button class={view === 'all' ? 'on' : ''} onClick={() => setView('all')}>
+          👀 All votes
+        </button>
+      </div>
       {ranked.every((r) => r.count === 0) ? (
-        <p class="dim">No submitted ballots yet.</p>
+        <p class="dim">{view === 'all' ? 'No votes yet.' : 'No submitted ballots yet.'}</p>
       ) : (
         <div class="resTable">
           {ranked.map((r) => (

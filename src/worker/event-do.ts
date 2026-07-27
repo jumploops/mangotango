@@ -401,17 +401,8 @@ export class MangoEvent extends DurableObject<Env> {
     };
   }
 
-  /** Results computed from active (non-superseded) submissions only. */
-  private computeResults(): MangoResult[] {
+  private aggregateResults(scoreRows: Array<{ mango_id: string; score: number }>): MangoResult[] {
     const mangoes = this.listMangoes(false);
-    const scoreRows = this.sql
-      .exec<{ mango_id: string; score: number }>(
-        `SELECT ss.mango_id, ss.score FROM submitted_scores ss
-         JOIN submissions s ON s.id = ss.submission_id
-         WHERE s.status = 'active' AND s.created_at >= ?`,
-        this.getEpoch(),
-      )
-      .toArray();
     const byMango = new Map<string, number[]>();
     for (const r of scoreRows) {
       let list = byMango.get(r.mango_id);
@@ -440,6 +431,34 @@ export class MangoEvent extends DurableObject<Env> {
       r.rank = i + 1;
     });
     return results;
+  }
+
+  /** Results computed from active (non-superseded) submissions only. */
+  private computeResults(): MangoResult[] {
+    return this.aggregateResults(
+      this.sql
+        .exec<{ mango_id: string; score: number }>(
+          `SELECT ss.mango_id, ss.score FROM submitted_scores ss
+           JOIN submissions s ON s.id = ss.submission_id
+           WHERE s.status = 'active' AND s.created_at >= ?`,
+          this.getEpoch(),
+        )
+        .toArray(),
+    );
+  }
+
+  /** Results over every current vote — the live ratings table, one row per
+      taster per mango — so drafts that never made it into a submitted ballot
+      still count. Admin-only view. */
+  private computeAllResults(): MangoResult[] {
+    return this.aggregateResults(
+      this.sql
+        .exec<{ mango_id: string; score: number }>(
+          'SELECT mango_id, score FROM ratings WHERE score >= 1 AND updated_at >= ?',
+          this.getEpoch(),
+        )
+        .toArray(),
+    );
   }
 
   private guestState(clientId: string | null): GuestState {
@@ -549,6 +568,7 @@ export class MangoEvent extends DurableObject<Env> {
       mangoes: this.adminMangoes(),
       stats: this.adminStats(),
       results: this.computeResults(),
+      allResults: this.computeAllResults(),
       recentSubmissions: this.recentSubmissions(),
       audit: this.recentAudit(),
       serverTime: Date.now(),
@@ -1080,6 +1100,7 @@ export class MangoEvent extends DurableObject<Env> {
       event,
       mangoes: this.adminMangoes(),
       results,
+      allResults: this.computeAllResults(),
     } satisfies PatchMessage);
 
     const submitted = event.resultsVisible ? this.submittedClientIds() : null;
@@ -1127,6 +1148,7 @@ export class MangoEvent extends DurableObject<Env> {
         recentSubmissions: this.recentSubmissions(),
         mangoes: this.adminMangoes(),
         results: this.computeResults(),
+        allResults: this.computeAllResults(),
       };
       this.broadcast(JSON.stringify(msg), true);
     }, 400);

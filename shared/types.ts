@@ -115,6 +115,8 @@ export interface AdminState {
   mangoes: MangoAdminInfo[];
   stats: AdminStats;
   results: MangoResult[];
+  /** Results over every current vote (drafts included), not just submitted ballots. */
+  allResults: MangoResult[];
   recentSubmissions: RecentSubmission[];
   audit: AuditEntry[];
   serverTime: number;
@@ -140,6 +142,8 @@ export interface PatchMessage {
   event: EventConfig;
   mangoes: Mango[]; // guests: available only; admins get MangoAdminInfo[]
   results: MangoResult[] | null;
+  /** Admin-bound patches only: every-vote results (drafts included). */
+  allResults?: MangoResult[];
 }
 
 export interface StatsMessage {
@@ -148,6 +152,7 @@ export interface StatsMessage {
   recentSubmissions: RecentSubmission[];
   mangoes: MangoAdminInfo[];
   results: MangoResult[];
+  allResults: MangoResult[];
 }
 
 export type ServerMessage = HelloMessage | PatchMessage | StatsMessage;
